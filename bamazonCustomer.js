@@ -13,6 +13,8 @@ var connection = mySQL.createConnection({
 connection.connect(function(err){
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
+    console.log("Welcome To Bamazon By Tianna!")
+    console.log("Here is what we have available: ");
     placeOrder();
 });
 
@@ -20,9 +22,8 @@ function placeOrder(){
 //Display items available
     connection.query("SELECT * FROM products;" + "\n", function(err, availableProducts){
         if (err) throw err;
-        console.log("Here is what we have available: ");
         console.log(availableProducts);
-    });
+    })
 //Ask user for input on product
     inquirer.prompt([
         {
@@ -36,32 +37,28 @@ function placeOrder(){
             message: "How many units would you like to purchase?",
         }
     ]).then(function(userAnswer){
-        connection.query("SELECT product_name, price, stock_quantity FROM products WHERE item_id = " + userAnswer.productID, function(err, res){
+//Compare user input to actual product IDs
+        connection.query("SELECT product_name, price, stock_quantity FROM products WHERE item_id = " + userAnswer.productID, function(err, productResponse){
             if (err) throw err;
             if(userAnswer.productID <= 5 || userAnswer.productID >= 12){
                 console.log("Sorry, we do not have that item available. Please search again.\n");
                 placeOrder();
             } else {
-                console.log("You have picked " + JSON.stringify(res[0].product_name));
+                console.log("You have picked " + JSON.stringify(productResponse[0].product_name));
             };
-        });
 //Conditional statement to determine whether there is enough of the product to sell to the user
-           if(userAnswer.productUnits > res.stock_quantity){
+        var updateStock = parseInt(productResponse[0].stock_quantity - userAnswer.productUnits);
+
+           if(userAnswer.productUnits > productResponse[0].stock_quantity){
                 console.log("Insufficient quantity, please try again!");
                 placeOrder();
-             } else if(userAnswer.productUnits <= res.stock_quantity){
-                connection.query("UPDATE products SET ? WHERE ?",
-                    [
-                      {
-                        stock_quantity: (res.stock_quantity - userAnswer.productUnits),
-                      },
-                      {
-                        productID: userAnswer.productID,
-                      }
-                    ], function(err, res) {
+             } else if(userAnswer.productUnits <= productResponse[0].stock_quantity){
+                connection.query(("UPDATE products SET stock_quantity = " + updateStock +  " WHERE item_id = " + parseInt(userAnswer.productID)), function(err, res) {
                         if (err) throw err;
-                        console.log(res.affectedRows + " product updated!\n");
-                        console.log("Order placed. Your item totaled to " + res[0].price);
+                        var calculatePrice = productResponse[0].price * userAnswer.productUnits;
+                        console.log("Order placed. Your item totaled to $" + calculatePrice);
+                        connection.end();
                     });
             };
+        });
     })};
