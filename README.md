@@ -25,4 +25,4 @@ This version of the game was created by Tianna Mosby. For questions, concerns or
 None.
 
 ## Example Picture
-See "example-picture" in repository.
+See "example-picture" and "example-picture2 in repository.
