@@ -56,9 +56,19 @@ function placeOrder(){
                 connection.query(("UPDATE products SET stock_quantity = " + updateStock +  " WHERE item_id = " + parseInt(userAnswer.productID)), function(err, res) {
                         if (err) throw err;
                         var calculatePrice = productResponse[0].price * userAnswer.productUnits;
-                        console.log("Order placed. Your item totaled to $" + calculatePrice);
-                        connection.end();
-                    });
+                        console.log("Your item has totaled to $" + calculatePrice);
+                        inquirer.prompt([
+                            {
+                                type: "list",
+                                name: "payment",
+                                message: "How would you like to pay today?",
+                                choices: ["Credit Card", "Debit Card", "Apple Pay"]
+                            },
+                        ]).then(function(paymentMethod){
+                            console.log("You have picked " + paymentMethod.payment + ". Your order has been placed. Please expect it to arrive within 5-7 business days. Goodbye!")
+                        });
+                    connection.end();
+                });
             };
         });
     })};
