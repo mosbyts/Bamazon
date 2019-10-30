@@ -13,8 +13,8 @@ var connection = mySQL.createConnection({
 connection.connect(function(err){
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
-    console.log("Welcome To Bamazon By Tianna!")
-    console.log("Here is what we have available: ");
+    console.log("Welcome To Bamazon By Tianna!\n")
+    console.log("Here is what we have available: \n");
     placeOrder();
 });
 
@@ -22,19 +22,21 @@ function placeOrder(){
 //Display items available
     connection.query("SELECT * FROM products;" + "\n", function(err, availableProducts){
         if (err) throw err;
+        console.log("\n");
         console.table(availableProducts);
+        console.log("\n");
     })
 //Ask user for input on product
     inquirer.prompt([
         {
             type: "input",
             name: "productID",
-            message: "What is the ID of the product you would like to purchase?",
+            message: "What is the ID of the product you would like to purchase?\n",
         },
         {
             type: "input",
             name: "productUnits",
-            message: "How many units would you like to purchase?",
+            message: "How many units would you like to purchase?\n",
         }
     ]).then(function(userAnswer){
 //Compare user input to actual product IDs
