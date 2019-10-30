@@ -22,7 +22,7 @@ function placeOrder(){
 //Display items available
     connection.query("SELECT * FROM products;" + "\n", function(err, availableProducts){
         if (err) throw err;
-        console.log(availableProducts);
+        console.table(availableProducts);
     })
 //Ask user for input on product
     inquirer.prompt([
